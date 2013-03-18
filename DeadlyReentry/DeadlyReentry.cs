@@ -34,15 +34,14 @@ namespace DeadlyReentry
                     }
                 }
 
-                if (afx != null)
+                if ((afx != null) && (afx.FxScalar > 0))
                 {
-                    if (afx.FxScalar > 0)
+                    Ray ray = new Ray();
+
+                    foreach (Part p in FlightGlobals.ActiveVessel.Parts)
                     {
-                        //print("DeadlyReentryGhost - FxScalar = " + afx.FxScalar);
-                        foreach (Part p in FlightGlobals.ActiveVessel.Parts)
-                        {
-                            p.temperature += afx.FxScalar * 1000.0f * TimeWarp.deltaTime;
-                        }
+                        ray.direction = (p.Rigidbody.GetPointVelocity(p.transform.position) + Krakensbane.GetFrameVelocityV3f() - Krakensbane.GetLastCorrection() * TimeWarp.fixedDeltaTime).normalized;
+                        ray.origin = p.transform.position;
                     }
                 }
             }
