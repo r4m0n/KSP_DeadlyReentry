@@ -42,6 +42,11 @@ namespace DeadlyReentry
                     {
                         ray.direction = (p.Rigidbody.GetPointVelocity(p.transform.position) + Krakensbane.GetFrameVelocityV3f() - Krakensbane.GetLastCorrection() * TimeWarp.fixedDeltaTime).normalized;
                         ray.origin = p.transform.position;
+
+                        if (!Physics.Raycast(ray, 10))
+                        {
+                            p.temperature += afx.FxScalar * 4000.0f * TimeWarp.deltaTime;
+                        }
                     }
                 }
             }
