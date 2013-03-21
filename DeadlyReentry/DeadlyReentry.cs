@@ -35,7 +35,7 @@ namespace DeadlyReentry
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.D) && Input.GetKey(KeyCode.LeftAlt))
+            if (Input.GetKeyDown(KeyCode.R) && Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.D))
             {
                 debugging = !debugging;
             }
