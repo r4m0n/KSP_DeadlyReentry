@@ -13,13 +13,13 @@ namespace DeadlyReentry
         public string valueModule = "";
 
         [KSPField(isPersistant = false)]
-        public string valueName;
+        public string valueName = "";
 
         [KSPField(isPersistant = false)]
-        public string animationName;
+        public string animationName = "";
 
         [KSPField(isPersistant = false)]
-        public FloatCurve valueCurve;
+        public FloatCurve valueCurve = new FloatCurve();
 
         protected Animation[] anims;
         protected PartModule module;
@@ -87,17 +87,6 @@ namespace DeadlyReentry
                         property.SetValue(target, valueCurve.Evaluate(anims[0][animationName].normalizedTime), null);
                     }
                 }
-            }
-        }
-
-        public override void OnLoad(ConfigNode node)
-        {
-            base.OnLoad(node);
-
-            if (node.HasNode("valueCurve"))
-            {
-                valueCurve = new FloatCurve();
-                valueCurve.Load(node.GetNode("valueCurve"));
             }
         }
     }
