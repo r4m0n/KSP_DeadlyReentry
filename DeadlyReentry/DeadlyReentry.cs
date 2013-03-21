@@ -1,6 +1,4 @@
-﻿#define DEBUG
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,28 +12,34 @@ namespace DeadlyReentry
         {
             GameObject ghost = new GameObject("DeadlyReentryGhost", typeof(DeadlyReentryGhost));
             GameObject.DontDestroyOnLoad(ghost);
-
-            base.TestStartUp();
         }
     }
 
     public class DeadlyReentryGhost : MonoBehaviour
     {
-        DebugWindow window;
         AerodynamicsFX afx;
 
-        public float Multiplier { get; set; }
-        public float Exponent { get; set; }
+        public static float Multiplier = 20000;
+        public static float Exponent = 2;
 
-        public void Start()
+        protected bool debugging = false;
+        protected Rect windowPos = new Rect(100, 100, 0, 0);
+
+        public void OnGUI()
         {
-            window = new DebugWindow(this);
-            Multiplier = 20000.0f;
-            Exponent = 2f;
+            if (debugging)
+            {
+                windowPos = GUILayout.Window("DeadlyReentry".GetHashCode(), windowPos, DrawWindow, "Deadly Reentry Setup");
+            }
         }
 
         public void Update()
         {
+            if (Input.GetKeyDown(KeyCode.D) && Input.GetKey(KeyCode.LeftAlt))
+            {
+                debugging = !debugging;
+            }
+
             if (FlightGlobals.ready && (FlightGlobals.ActiveVessel != null))
             {
                 if (afx == null)
@@ -65,23 +69,7 @@ namespace DeadlyReentry
             }
         }
 
-        public void ToggleDebugWindow()
-        {
-            window.SetVisible(!window.IsVisible());
-        }
-    }
-
-    class DebugWindow : Window
-    {
-        private DeadlyReentryGhost ghost;
-
-        public DebugWindow(DeadlyReentryGhost ghost)
-            : base("Deadly Reentry", null)
-        {
-            this.ghost = ghost;
-        }
-
-        protected override void Draw(int windowID)
+        public void DrawWindow(int windowID)
         {
             GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
             buttonStyle.padding = new RectOffset(5, 5, 3, 0);
@@ -98,18 +86,18 @@ namespace DeadlyReentry
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("X", buttonStyle))
             {
-                SetVisible(false);
+                debugging = false;
             }
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Exponent:", labelStyle);
-            string newExponent = GUILayout.TextField(ghost.Exponent.ToString(), GUILayout.MinWidth(100));
+            string newExponent = GUILayout.TextField(Exponent.ToString(), GUILayout.MinWidth(100));
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Multiplier:", labelStyle);
-            string newMultiplier = GUILayout.TextField(ghost.Multiplier.ToString(), GUILayout.MinWidth(100));
+            string newMultiplier = GUILayout.TextField(Multiplier.ToString(), GUILayout.MinWidth(100));
             GUILayout.EndHorizontal();
 
             GUILayout.EndVertical();
@@ -121,36 +109,14 @@ namespace DeadlyReentry
                 float newValue;
                 if (float.TryParse(newExponent, out newValue))
                 {
-                    ghost.Exponent = newValue;
+                    Exponent = newValue;
                 }
 
                 if (float.TryParse(newMultiplier, out newValue))
                 {
-                    ghost.Multiplier = newValue;
+                    Multiplier = newValue;
                 }
             }
         }
-    }
-}
-
-public class DeadlyReentryModule : PartModule
-{
-    private DeadlyReentry.DeadlyReentryGhost drg;
-
-    [KSPEvent(guiActive = true, guiName = "Toggle Deadly Reentry Debug Window", active = false)]
-    public void ToggleDebugWindow()
-    {
-        drg.ToggleDebugWindow();
-    }
-
-    public override void OnStart(StartState state)
-    {
-#if DEBUG
-        if (state != StartState.Editor)
-        {
-            drg = GameObject.Find("DeadlyReentryGhost").GetComponent<DeadlyReentry.DeadlyReentryGhost>();
-            Events["ToggleDebugWindow"].active = true;
-        }
-#endif
     }
 }
