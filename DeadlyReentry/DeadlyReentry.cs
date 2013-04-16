@@ -62,7 +62,7 @@ namespace DeadlyReentry
 
                         if (!Physics.Raycast(ray, 10))
                         {
-                            p.temperature += Mathf.Pow(afx.FxScalar, Exponent) * Multiplier * TimeWarp.deltaTime;
+                            p.temperature += Mathf.Pow(afx.FxScalar * afx.state, Exponent) * Multiplier * TimeWarp.deltaTime;
                         }
                     }
                 }
